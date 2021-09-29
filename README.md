@@ -4,5 +4,5 @@ First Round Jobs
 
 Eric: script
 Josh: 20 sql queries
-Aditya: Miro Consumer Side
+Aditya, Ethan: Miro Consumer Side
 Jeemin: Miro Analyst Side
