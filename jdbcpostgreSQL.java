@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.io.*;
 import java.util.Scanner;
+import java.nio.charset.Charset; // check for non-ascii chars
 
 /*
 CSCE 315
@@ -48,7 +49,7 @@ public class jdbcpostgreSQL {
         line = sc.nextLine();
         lineArr = line.split("\t");
         for(int i=1; i<lineArr.length; i++){  //start at 1 because idk what the first slot is
-          if(lineArr[i] == "" || lineArr[i].contains("\'")){
+          if(lineArr[i] == "" || lineArr[i].contains("\'") || !Charset.forName("US-ASCII").newEncoder().canEncode(lineArr[i])){  // skip bad data
             skip = true;
             System.out.println("SKIP: " + lineArr[i]);
             break;
