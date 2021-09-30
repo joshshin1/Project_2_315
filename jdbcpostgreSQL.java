@@ -65,7 +65,7 @@ public class jdbcpostgreSQL {
           sqlStatement = "INSERT INTO "+tableName+" VALUES(";
           for(int i=1; i<lineArr.length; i++){
             // Check data type and handle appropriately
-            if(types[i-1] == "text"){
+            if(types[i-1] == "text" || types[i-1] == "date"){
               sqlStatement += "\'"+lineArr[i] + "\'";
             }
             else if(types[i-1] == "text[]"){
@@ -145,11 +145,16 @@ public class jdbcpostgreSQL {
       //psql -h csce-315-db.engr.tamu.edu -U csce315[SectionNumber]_[TeamNumber]usercsce315[SectionNumber]_[TeamNumber]db
 
       //String tableName = "";
+
+
       String[] crewTypes = {"text", "text[]", "text[]"};
       populateDB("crew", crewTypes, "crew.csv", stmt);
+
       String[] namesTypes = {"text", "text", "int", "int", "text[]"};
       populateDB("names", namesTypes, "names.csv", stmt);
-      
+
+      String[] customerRatingsTypes = {"int", "int", "date", "text"};
+      populateDB("customer_ratings", customerRatingsTypes, "customer_ratings.csv", stmt);
       
 
        
