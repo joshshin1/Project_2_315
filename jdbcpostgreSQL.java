@@ -30,7 +30,6 @@ public class jdbcpostgreSQL {
       String makeTableStatement = "CREATE TABLE " + tableName + " (";
       //System.out.println(lineArr.length);
       for(int i=0; i<types.length; i++){
-        System.out.println(makeTableStatement);
         makeTableStatement += lineArr[i+1] + " " + types[i];
         if(i < types.length-1){
           makeTableStatement += ", ";
@@ -42,14 +41,21 @@ public class jdbcpostgreSQL {
       result = stmt.executeUpdate(makeTableStatement); //Make empty table
 
       String sqlStatement = "";
+      String[] attrArr;
       
       int cnt = 0;  //for testing
       boolean skip = false;
       while(sc.hasNext()){
         line = sc.nextLine();
         lineArr = line.split("\t");
-        for(int i=1; i<lineArr.length; i++){  //start at 1 because idk what the first slot is
-          if(lineArr[i] == "" || lineArr[i].contains("\'") || !Charset.forName("US-ASCII").newEncoder().canEncode(lineArr[i])){  // skip bad data
+        // Skip if there are not enough attributes to match the types
+        if(lineArr.length < types.length+1){
+          skip = true;
+          System.out.println("SKIP: ");
+        }
+        for(int i=1; i<lineArr.length; i++){
+          // Skip bad data
+          if(lineArr[i] == "" || lineArr[i].contains("\'") || !Charset.forName("US-ASCII").newEncoder().canEncode(lineArr[i])){
             skip = true;
             System.out.println("SKIP: " + lineArr[i]);
             break;
@@ -58,8 +64,21 @@ public class jdbcpostgreSQL {
         if(!skip){
           sqlStatement = "INSERT INTO "+tableName+" VALUES(";
           for(int i=1; i<lineArr.length; i++){
-            if(types[i-1] == "text"){  //check to see if I need single quotes
+            // Check data type and handle appropriately
+            if(types[i-1] == "text"){
               sqlStatement += "\'"+lineArr[i] + "\'";
+            }
+            else if(types[i-1] == "text[]"){
+              attrArr = lineArr[i].split(",");
+              sqlStatement += "ARRAY[";
+              // Construct input array
+              for(int j=0; j<attrArr.length;j++){
+                sqlStatement += "\'"+attrArr[j] + "\'";
+                if(j < attrArr.length-1){
+                  sqlStatement += ", ";
+                }
+              }
+              sqlStatement += "]";
             }
             else{
               sqlStatement += lineArr[i];
@@ -126,11 +145,11 @@ public class jdbcpostgreSQL {
       //psql -h csce-315-db.engr.tamu.edu -U csce315[SectionNumber]_[TeamNumber]usercsce315[SectionNumber]_[TeamNumber]db
 
       //String tableName = "";
-      String[] crewTypes = {"text", "text", "text"};
+      String[] crewTypes = {"text", "text[]", "text[]"};
       populateDB("crew", crewTypes, "crew.csv", stmt);
-      String[] namesTypes = {"text", "text", "int", "int", "text"};
+      String[] namesTypes = {"text", "text", "int", "int", "text[]"};
       populateDB("names", namesTypes, "names.csv", stmt);
-
+      
       
 
        
