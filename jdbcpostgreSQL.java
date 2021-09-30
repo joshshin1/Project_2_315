@@ -15,6 +15,82 @@ public class jdbcpostgreSQL {
   //Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL
   //Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL
 
+  public static void populateDB(String tableName, String[] types, String fileName, Statement stmt){
+    try{
+      //create a statement object
+      int result;
+      String dropTableStatement = "DROP TABLE "+ tableName;
+
+      Scanner sc = new Scanner(new File(fileName));
+      sc.useDelimiter("\t");
+      String line = sc.nextLine();
+      String[] lineArr = line.split("\t");
+
+      String makeTableStatement = "CREATE TABLE " + tableName + " (";
+      //System.out.println(lineArr.length);
+      for(int i=0; i<types.length; i++){
+        System.out.println(makeTableStatement);
+        makeTableStatement += lineArr[i+1] + " " + types[i];
+        if(i < types.length-1){
+          makeTableStatement += ", ";
+        }
+      }
+      makeTableStatement +=")";
+
+      result = stmt.executeUpdate(dropTableStatement); //Drop previous table
+      result = stmt.executeUpdate(makeTableStatement); //Make empty table
+
+      String sqlStatement = "";
+      
+      int cnt = 0;  //for testing
+      boolean skip = false;
+      while(sc.hasNext()){
+        line = sc.nextLine();
+        lineArr = line.split("\t");
+        for(int i=1; i<lineArr.length; i++){  //start at 1 because idk what the first slot is
+          if(lineArr[i] == "" || lineArr[i].contains("\'")){
+            skip = true;
+            System.out.println("SKIP: " + lineArr[i]);
+            break;
+          }
+        }
+        if(!skip){
+          sqlStatement = "INSERT INTO "+tableName+" VALUES(";
+          for(int i=1; i<lineArr.length; i++){
+            if(types[i-1] == "text"){  //check to see if I need single quotes
+              sqlStatement += "\'"+lineArr[i] + "\'";
+            }
+            else{
+              sqlStatement += lineArr[i];
+            }
+            if(i < lineArr.length-1){
+              sqlStatement += ", ";
+            }
+          }
+          sqlStatement += ")";
+          System.out.println(sqlStatement);
+          result = stmt.executeUpdate(sqlStatement);
+        }
+        
+        // Testing only first 100 because time
+        cnt++;
+        if(cnt > 100){
+          break;
+        }
+
+        skip = false;
+      }
+      sc.close();
+
+    } catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+    }
+  }
+
+
+
   //MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
   public static void main(String args[]) {
  
@@ -47,7 +123,14 @@ public class jdbcpostgreSQL {
       //Running a query
       //TODO: update the sql command here
       //psql -h csce-315-db.engr.tamu.edu -U csce315[SectionNumber]_[TeamNumber]usercsce315[SectionNumber]_[TeamNumber]db
-      String tableName = "";
+
+      //String tableName = "";
+      String[] crewTypes = {"text", "text", "text"};
+      populateDB("crew", crewTypes, "crew.csv", stmt);
+      String[] namesTypes = {"text", "text", "int", "int", "text"};
+      populateDB("names", namesTypes, "names.csv", stmt);
+
+      
 
        
       //String sqlStatement = "INSERT INTO teammembers VALUES(\'Cranjis McBasketball\', 906,\'Monsters\', \'01/01/01\')";
@@ -65,7 +148,8 @@ public class jdbcpostgreSQL {
 
 
 
-      // CREW.CSV
+      // Old Way for reference
+      /*
       String dropTableStatement = "DROP TABLE crew";
       String makeTableStatement = "CREATE TABLE crew (titleId text, directors text, writers text)";
 
@@ -102,6 +186,7 @@ public class jdbcpostgreSQL {
         }
       }
       sc.close();
+      */
 
 
 
@@ -110,7 +195,7 @@ public class jdbcpostgreSQL {
 
       //OUTPUT
       //You will need to output the results differently depeninding on which function you use
-      System.out.println("--------------------Query Results--------------------");
+      //System.out.println("--------------------Query Results--------------------");
       //while (result.next()) {
       // System.out.println(result.getString("column_name"));
       //}
