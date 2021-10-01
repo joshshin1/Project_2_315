@@ -92,12 +92,23 @@ public class jdbcpostgreSQL {
             // Check data type and handle appropriately
             if(types[i - 1] == "text" || types[i - 1] == "date"){
               if(tableName == "titles" && i == 3){
+                // Special case duplicate titles
                 if(duplicates.get(lineArr[i]) == null){
                   sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
                   duplicates.put(lineArr[i], "yes");
                 }
                 else{
                   skip = true;
+                }
+              }
+              else if(tableName == "principals" && i == 4){
+                // Sometimes the job also has the character without a tab so we remove the character completely
+                String[] checkBad = lineArr[i].split(" ", 3);
+                if(checkBad.length>1){
+                  sqlStatement += "\'"+checkBad[0].replaceAll("\"", "") + "\'";
+                }
+                else{
+                  sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
                 }
               }
               else{
@@ -191,12 +202,12 @@ public class jdbcpostgreSQL {
       String[] titlesTypes = {"text", "text", "text", "int", "int", "int", "text[]", "int", "real", "int"};
       Boolean[] titlesEmpty = {false, false, false, true, true, false, false, false, false, false};
       Boolean[] titlesOmit = {false, false, false, true, true, false, false, false, false, false};
-      populateDB("titles", titlesTypes, "titles.csv", titlesEmpty, titlesOmit, stmt);
+      //populateDB("titles", titlesTypes, "titles.csv", titlesEmpty, titlesOmit, stmt);
 
       String[] principalsTypes = {"text", "text", "text", "text", "text[]"};
       Boolean[] principalsEmpty = {false, false, false, true, true};
       Boolean[] principalsOmit = {false, false, false, false, false};
-      //populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
+      populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
     }
     catch (Exception e){
       e.printStackTrace();
