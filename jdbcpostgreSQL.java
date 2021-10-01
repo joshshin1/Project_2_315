@@ -2,6 +2,7 @@ import java.sql.*;
 import java.io.*;
 import java.util.Scanner;
 import java.nio.charset.Charset; // check for non-ascii chars
+import java.util.*;  // for hashtable to check for duplicate titles
 
 /*
 CSCE 315
@@ -46,6 +47,7 @@ public class jdbcpostgreSQL {
       String[] attrArr;
       
       boolean skip = false;
+      Hashtable<String, String> duplicates = new Hashtable<String, String>();
       while(sc.hasNext()){
         line = sc.nextLine();
         lineArr = line.split("\t");
@@ -89,7 +91,18 @@ public class jdbcpostgreSQL {
             }
             // Check data type and handle appropriately
             if(types[i - 1] == "text" || types[i - 1] == "date"){
-              sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+              if(tableName == "titles" && i == 3){
+                if(duplicates.get(lineArr[i]) == null){
+                  sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+                  duplicates.put(lineArr[i], "yes");
+                }
+                else{
+                  skip = true;
+                }
+              }
+              else{
+                sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+              }
             }
             else if(types[i - 1] == "text[]"){
               attrArr = lineArr[i].split(",");
@@ -111,8 +124,11 @@ public class jdbcpostgreSQL {
             }
           }
           sqlStatement += ")";
-          System.out.println(sqlStatement);
-          result = stmt.executeUpdate(sqlStatement);
+          if(!skip){
+            System.out.println(sqlStatement);
+            result = stmt.executeUpdate(sqlStatement);
+          }
+          
         }
         skip = false;
       }
