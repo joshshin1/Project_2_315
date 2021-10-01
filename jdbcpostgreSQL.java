@@ -4,10 +4,7 @@ import java.util.Scanner;
 import java.nio.charset.Charset; // check for non-ascii chars
 import java.util.*;  // for hashtable to check for duplicate titles
 
-/*
-CSCE 315
-9-27-2021 Lab
- */
+
 public class jdbcpostgreSQL {
 
   //Commands to run this script
@@ -27,8 +24,8 @@ public class jdbcpostgreSQL {
       String makeTableStatement = "CREATE TABLE " + tableName + " (";
       for(int i = 0; i < types.length; i++){
         if(!omit[i]){
-          makeTableStatement += lineArr[i+1] + " " + types[i];
-          if(i < types.length-1){
+          makeTableStatement += lineArr[i + 1] + " " + types[i];
+          if(i < types.length - 1){
             makeTableStatement += ", ";
           }
         }
@@ -38,7 +35,7 @@ public class jdbcpostgreSQL {
 
       int result;
       //Drop previous table
-      result = stmt.executeUpdate("DROP TABLE "+ tableName); 
+      result = stmt.executeUpdate("DROP TABLE " + tableName); 
 
       //Make empty table
       result = stmt.executeUpdate(makeTableStatement); 
@@ -60,7 +57,7 @@ public class jdbcpostgreSQL {
           }
         }
         // Skip if there are not enough attributes to match the types
-        if(lineArr.length+numEmpty < types.length+1){
+        if(lineArr.length + numEmpty < types.length+1){
           skip = true;
           System.out.println("SKIP: ");
         }
@@ -83,7 +80,7 @@ public class jdbcpostgreSQL {
           }
         }
         if(!skip){
-          sqlStatement = "INSERT INTO "+tableName+" VALUES(";
+          sqlStatement = "INSERT INTO " + tableName + " VALUES(";
           for(int i = 1; i < lineArr.length; i++){
             // Check if this attribute is collected
             if(omit[i-1]){
@@ -94,7 +91,7 @@ public class jdbcpostgreSQL {
               if(tableName == "titles" && i == 3){
                 // Special case duplicate titles
                 if(duplicates.get(lineArr[i]) == null){
-                  sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+                  sqlStatement += "\'" + lineArr[i].replaceAll("\"", "") + "\'";
                   duplicates.put(lineArr[i], "yes");
                 }
                 else{
@@ -105,14 +102,14 @@ public class jdbcpostgreSQL {
                 // Sometimes the job also has the character without a tab so we remove the character completely
                 String[] checkBad = lineArr[i].split(" ", 3);
                 if(checkBad.length>1){
-                  sqlStatement += "\'"+checkBad[0].replaceAll("\"", "") + "\'";
+                  sqlStatement += "\'" + checkBad[0].replaceAll("\"", "") + "\'";
                 }
                 else{
-                  sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+                  sqlStatement += "\'" + lineArr[i].replaceAll("\"", "") + "\'";
                 }
               }
               else{
-                sqlStatement += "\'"+lineArr[i].replaceAll("\"", "") + "\'";
+                sqlStatement += "\'" + lineArr[i].replaceAll("\"", "") + "\'";
               }
             }
             else if(types[i - 1] == "text[]"){
@@ -139,16 +136,14 @@ public class jdbcpostgreSQL {
             System.out.println(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
           }
-          
         }
         skip = false;
       }
       sc.close();
-
     }
     catch (Exception e){
       e.printStackTrace();
-      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
       System.exit(0);
     }
   }
@@ -173,7 +168,7 @@ public class jdbcpostgreSQL {
     }
     catch (Exception e){
       e.printStackTrace();
-      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
       System.exit(0);
     }
 
@@ -191,7 +186,7 @@ public class jdbcpostgreSQL {
 
       String[] namesTypes = {"text", "text", "int", "int", "text[]"};
       Boolean[] namesEmpty = {false, false, false, true, false};
-      Boolean[] namesOmit = {false, false, false, false};
+      Boolean[] namesOmit = {false, false, false, false, false};
       //populateDB("names", namesTypes, "names.csv", namesEmpty, namesOmit, stmt);
 
       String[] customerRatingsTypes = {"int", "int", "date", "text"};
@@ -207,7 +202,7 @@ public class jdbcpostgreSQL {
       String[] principalsTypes = {"text", "text", "text", "text", "text[]"};
       Boolean[] principalsEmpty = {false, false, false, true, true};
       Boolean[] principalsOmit = {false, false, false, false, false};
-      populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
+      //populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
     }
     catch (Exception e){
       e.printStackTrace();
