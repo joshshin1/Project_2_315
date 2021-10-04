@@ -1,0 +1,46 @@
+#!bin/zsh
+export PGPASSWORD='Password123'
+echo 'TABLES'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "\d"
+echo 'EXAMPLE COLUMNS FOR TITLES TABLE'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "\d+ titles"
+echo 'WHO IS GIVING ALL THESE 5 STAR RATINGS?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c 'select customerid, count(customerid) from customer_ratings where rating = 5 group by customerid limit 10;'
+echo 'WHICH TITLE HAS THE MOST 1 STAR RATINGS?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c 'select titleid, count(titleid) from customer_ratings where rating = 1 group by titleid limit 10;'
+echo 'WHERE ARE ALL THE MOVIES?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle from titles where titletype = 'movie' limit 10;"
+echo 'WHERE ARE ALL THE TV SHOWS?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle from titles where titletype = 'tvSeries' limit 10;"
+echo 'WHICH MOVIES ARE UNDER 2 HOURS?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, runtimeminutes from titles where runtimeminutes < 120 limit 10;"
+echo 'WHAT ARE THE SHORTEST MOVIES?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, runtimeminutes, averagerating from titles where titletype = 'movie' order by runtimeminutes asc limit 10"
+echo 'WHO DIRECTED MOVIES RATED ABOVE 9?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select directors from crew where exists (select * from titles where crew.titleid = titles.titleid and averagerating > 9) limit 10"
+echo 'WHICH MOVIES ARE ACTION MOVIES?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, genres from titles where 'Action' = any (genres) limit 10;"
+echo 'HOW MANY DOCUMENTARIES ARE THERE?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select count(titleid) from titles where 'Documentary' = any (genres) limit 10;"
+echo 'WHAT ARE THE WORST MOVIES OF ALL TIME (by rating)?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, averagerating from titles where titletype = 'movie' order by averagerating asc limit 10;"
+echo 'WHAT ARE THE WORST MOVIES OF ALL TIME (by votes)?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, numvotes from titles where titletype = 'movie' order by numvotes asc limit 10;"
+echo 'WHO DIRECTED MOVIES RATED ABOVE 9?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select directors from crew where exists (select * from titles where crew.titleid = titles.titleid and averagerating > 9) limit 10"
+echo 'WHAT ARE THE BEST MOVIES OF ALL TIME (by rating)?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, averagerating from titles where titletype = 'movie' order by averagerating desc limit 10;"
+echo 'WHAT ARE THE BEST MOVIES OF ALL TIME (by votes)?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, numvotes from titles where titletype = 'movie' order by numvotes desc limit 10;"
+echo 'WHAT ARE THE BEST MOVIES AFTER 2000?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, averagerating, year from titles where titletype = 'movie' and year > 2000 order by averagerating desc limit 10;"
+echo 'WHAT WERE THE BEST TITLES MADE IN THE 1990s'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select originaltitle, averagerating, year from titles where year < 2000 and year > 1989 order by averagerating desc limit 10;"
+echo 'WHAT ACTORS HAVE HAD BIG ROLES?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select primaryname from names where exists (select * from principals where principals.nconst = names.nconst and category = 'actor') limit 10"
+echo 'WHAT ACTRESSES HAVE HAD BIG ROLES?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select primaryname from names where exists (select * from principals where principals.nconst = names.nconst and category = 'actress') limit 10"
+echo 'HOW MANY DIRECTORS ARE THERE?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select count(nconst) from names where 'director' = any (primaryprofession) limit 10;"
+echo 'WHO HAS MORE THAN 2 PROFESSIONS?'
+psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db -c "select primaryname, primaryprofession from names where cardinality (primaryprofession) > 2 limit 10;"

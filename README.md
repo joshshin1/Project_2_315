@@ -14,12 +14,12 @@ Jeemin: Miro Analyst Side
 
 ## Useful Commands
 
-Compile code: `$ javac *.java`
+Compile code: `javac *.java`
 
-Run code: `$ java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL`
+Run code: `java -cp "./postgresql-42.2.8.jar" jdbcpostgreSQL`
+If that doesn't work: `java -cp "./postgresql-42.2.8.jar" jdbcpostgreSQL.java`
 
-Connect to our DB: `$ psql -h csce-315-db.engr.tamu.edu -U csce315906_12user 
-csce315906_12db`
+Connect to our DB: `psql -h csce-315-db.engr.tamu.edu -U csce315906_12user csce315906_12db`
 
 Check existing tables: `$ \dt`
 
