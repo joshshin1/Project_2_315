@@ -180,29 +180,29 @@ public class jdbcpostgreSQL {
 
       // Populate the Database
       String[] crewTypes = {"text", "text[]", "text[]"};
-      Boolean[] crewEmpty = {false, false, false};
+      Boolean[] crewEmpty = {false, true, true};
       Boolean[] crewOmit = {false, false, false};
-      populateDB("crew", crewTypes, "crew.csv", crewEmpty, crewOmit, stmt);
+      //populateDB("crew", crewTypes, "crew.csv", crewEmpty, crewOmit, stmt);
 
       String[] namesTypes = {"text", "text", "int", "int", "text[]"};
-      Boolean[] namesEmpty = {false, false, false, true, false};
+      Boolean[] namesEmpty = {false, false, true, true, true};
       Boolean[] namesOmit = {false, false, false, false, false};
-      populateDB("names", namesTypes, "names.csv", namesEmpty, namesOmit, stmt);
+      //populateDB("names", namesTypes, "names.csv", namesEmpty, namesOmit, stmt);
 
       String[] customerRatingsTypes = {"int", "int", "date", "text"};
       Boolean[] customerRatingsEmpty = {false, false, false, false};
       Boolean[] customerRatingsOmit = {false, false, false, false};
-      populateDB("customer_ratings", customerRatingsTypes, "customer_ratings.csv", customerRatingsEmpty, customerRatingsOmit, stmt);
+      //populateDB("customer_ratings", customerRatingsTypes, "customer_ratings.csv", customerRatingsEmpty, customerRatingsOmit, stmt);
 
       String[] titlesTypes = {"text", "text", "text", "int", "int", "int", "text[]", "int", "real", "int"};
-      Boolean[] titlesEmpty = {false, false, false, true, true, false, false, false, false, false};
+      Boolean[] titlesEmpty = {false, false, false, true, true, true, true, true, true, true};
       Boolean[] titlesOmit = {false, false, false, true, true, false, false, false, false, false};
-      populateDB("titles", titlesTypes, "titles.csv", titlesEmpty, titlesOmit, stmt);
+      //populateDB("titles", titlesTypes, "titles.csv", titlesEmpty, titlesOmit, stmt);
 
       String[] principalsTypes = {"text", "text", "text", "text", "text[]"};
-      Boolean[] principalsEmpty = {false, false, false, true, true};
+      Boolean[] principalsEmpty = {false, false, true, true, true};
       Boolean[] principalsOmit = {false, false, false, false, false};
-      populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
+      //populateDB("principals", principalsTypes, "principals.csv", principalsEmpty, principalsOmit, stmt);
     }
     catch (Exception e){
       e.printStackTrace();
