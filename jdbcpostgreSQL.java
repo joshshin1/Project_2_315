@@ -45,6 +45,8 @@ public class jdbcpostgreSQL {
       
       boolean skip = false;
       Hashtable<String, String> duplicates = new Hashtable<String, String>();
+      int count = 0;
+      // Start of while loop -------------
       while(sc.hasNext()){
         line = sc.nextLine();
         lineArr = line.split("\t");
@@ -134,11 +136,17 @@ public class jdbcpostgreSQL {
           sqlStatement += ")";
           if(!skip){
             System.out.println(sqlStatement);
-            result = stmt.executeUpdate(sqlStatement);
+            stmt.addBatch(sqlStatement);
+            //result = stmt.executeUpdate(sqlStatement);
           }
+        }
+        count++;
+        if(count % 20000 == 0){
+          stmt.executeBatch();
         }
         skip = false;
       }
+      stmt.executeBatch();
       sc.close();
     }
     catch (Exception e){
@@ -195,7 +203,7 @@ public class jdbcpostgreSQL {
       //populateDB("customer_ratings", customerRatingsTypes, "customer_ratings.csv", customerRatingsEmpty, customerRatingsOmit, stmt);
 
       String[] titlesTypes = {"text", "text", "text", "int", "int", "int", "text[]", "int", "real", "int"};
-      Boolean[] titlesEmpty = {false, false, false, true, true, true, true, true, true, true};
+      Boolean[] titlesEmpty = {false, true, true, true, true, true, true, true, true, true};
       Boolean[] titlesOmit = {false, false, false, true, true, false, false, false, false, false};
       //populateDB("titles", titlesTypes, "titles.csv", titlesEmpty, titlesOmit, stmt);
 
